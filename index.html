@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestor de cargas LIPSA</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Menú principal">
+        <div class="sidebar__brand">
+          <div class="brand__logo" aria-hidden="true">🚚</div>
+          <div class="brand__text">
+            <span class="brand__title">HLE – Cargas</span>
+            <span class="brand__subtitle">Planificador logístico</span>
+          </div>
+        </div>
+        <nav class="sidebar__nav">
+          <button class="nav__item is-active" data-target="panel-planificador">
+            📋 Planificador
+          </button>
+          <button class="nav__item" data-target="panel-agenda">🗓️ Agenda diaria</button>
+          <button class="nav__item" data-target="panel-contactos">👥 Contactos</button>
+          <button class="nav__item" data-target="panel-historial">
+            📨 Respuestas &amp; historial
+          </button>
+        </nav>
+        <div class="sidebar__footer">
+          <button id="logoutBtn" class="button button--ghost">Cerrar sesión</button>
+        </div>
+      </aside>
+
+      <main class="main-panel">
+        <header class="main-panel__header">
+          <div>
+            <h1 class="main-panel__title">Gestor de cargas</h1>
+            <p class="main-panel__subtitle">
+              Consulta, programa y comunica las cargas confirmadas del día siguiente.
+            </p>
+          </div>
+          <div class="user-pill" id="userPill" hidden>
+            <span class="user-pill__name" id="userName"></span>
+            <span class="user-pill__role" id="userRole"></span>
+          </div>
+        </header>
+
+        <section class="panel" id="panel-planificador">
+          <div class="panel__header">
+            <h2>Planificación de cargas</h2>
+            <div class="panel__actions">
+              <button class="button" id="refreshLoadsBtn">🔄 Listar cargas</button>
+              <button class="button button--secondary" id="saveHoursBtn">
+                💾 Guardar horas
+              </button>
+              <button class="button button--primary" id="sendEmailsBtn">
+                ✉️ Enviar correos
+              </button>
+            </div>
+          </div>
+
+          <div class="panel__content">
+            <div class="info-banner">
+              <p>
+                Cada registro muestra los envíos confirmados por Logística y Producción
+                con fecha de carga prevista para mañana. La hora de carga se puede
+                editar directamente en la tabla. Marca la casilla <strong>Enviar correo</strong>
+                para incluir el envío en la campaña automática.
+              </p>
+            </div>
+
+            <div class="table-wrapper">
+              <table class="data-table" id="loadsTable">
+                <thead>
+                  <tr>
+                    <th>N.º envío</th>
+                    <th>Pedido</th>
+                    <th>Transportista</th>
+                    <th>Cliente</th>
+                    <th>Fecha carga</th>
+                    <th>Hora carga</th>
+                    <th>Estado email</th>
+                    <th>Enviar correo</th>
+                    <th>Confirmado</th>
+                    <th>Respuesta transportista</th>
+                    <th>Horas propuestas</th>
+                    <th>Enlace formulario</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+
+            <section class="panel__section">
+              <h3>Registro de acciones</h3>
+              <ul class="log" id="activityLog"></ul>
+            </section>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-agenda" hidden>
+          <div class="panel__header">
+            <h2>Agenda diaria</h2>
+            <div class="panel__filters">
+              <label class="field">
+                <span class="field__label">Fecha</span>
+                <input type="date" id="agendaDate" />
+              </label>
+            </div>
+          </div>
+
+          <div class="panel__content" id="agendaContainer"></div>
+        </section>
+
+        <section class="panel" id="panel-contactos" hidden>
+          <div class="panel__header">
+            <h2>Mantenimiento de contactos</h2>
+          </div>
+          <div class="panel__content panel__grid">
+            <article class="card">
+              <h3>Transportistas</h3>
+              <form class="form" id="transportForm">
+                <div class="form__row">
+                  <label class="field">
+                    <span class="field__label">Código</span>
+                    <input type="text" name="codigo" required />
+                  </label>
+                  <label class="field">
+                    <span class="field__label">Nombre</span>
+                    <input type="text" name="nombre" required />
+                  </label>
+                </div>
+                <div class="form__row">
+                  <label class="field">
+                    <span class="field__label">Correo</span>
+                    <input type="email" name="email" required />
+                  </label>
+                  <label class="field">
+                    <span class="field__label">Teléfono</span>
+                    <input type="tel" name="telefono" />
+                  </label>
+                </div>
+                <button class="button button--primary" type="submit">
+                  ➕ Guardar transportista
+                </button>
+              </form>
+              <ul class="list" id="transportList"></ul>
+            </article>
+
+            <article class="card">
+              <h3>Clientes</h3>
+              <form class="form" id="clientForm">
+                <div class="form__row">
+                  <label class="field">
+                    <span class="field__label">Código</span>
+                    <input type="text" name="codigo" required />
+                  </label>
+                  <label class="field">
+                    <span class="field__label">Razón social</span>
+                    <input type="text" name="nombre" required />
+                  </label>
+                </div>
+                <div class="form__row">
+                  <label class="field">
+                    <span class="field__label">Correo</span>
+                    <input type="email" name="email" required />
+                  </label>
+                  <label class="field">
+                    <span class="field__label">Teléfono</span>
+                    <input type="tel" name="telefono" />
+                  </label>
+                </div>
+                <button class="button button--primary" type="submit">
+                  ➕ Guardar cliente
+                </button>
+              </form>
+              <ul class="list" id="clientList"></ul>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-historial" hidden>
+          <div class="panel__header">
+            <h2>Respuestas de transportistas</h2>
+          </div>
+          <div class="panel__content">
+            <div class="table-wrapper">
+              <table class="data-table" id="responsesTable">
+                <thead>
+                  <tr>
+                    <th>N.º envío</th>
+                    <th>Transportista</th>
+                    <th>Estado</th>
+                    <th>Comentario</th>
+                    <th>Horas propuestas</th>
+                    <th>Última actualización</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="modal" id="loginModal" role="dialog" aria-modal="true">
+      <div class="modal__content">
+        <h2 class="modal__title">Accede al planificador</h2>
+        <p class="modal__subtitle">
+          Utiliza las credenciales facilitadas por IT para registrar tus movimientos.
+        </p>
+        <form id="loginForm" class="form form--stacked">
+          <label class="field">
+            <span class="field__label">Usuario</span>
+            <input type="text" name="username" required autofocus />
+          </label>
+          <label class="field">
+            <span class="field__label">Contraseña</span>
+            <input type="password" name="password" required />
+          </label>
+          <button class="button button--primary" type="submit">Iniciar sesión</button>
+          <p class="form__helper">
+            Usuarios demo: <strong>planificador/planificador</strong> o
+            <strong>logistica/logistica</strong>.
+          </p>
+          <p class="form__error" id="loginError" role="alert" hidden>
+            Credenciales no válidas. Vuelve a intentarlo.
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>
