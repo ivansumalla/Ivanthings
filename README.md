@@ -20,7 +20,7 @@ respuesta de los transportistas.
 ## Requisitos
 
 1. Servidor web con PHP 8.1+ y la extensión `pdo_sqlsrv` habilitada.
-2. Acceso a la instancia `AXSQL` con la base de datos `Lipsaquery`.
+2. Acceso a la instancia `AXSQL` con la base de datos `AX_REAL`.
 3. Tablas necesarias en la BBDD:
    ```sql
    CREATE TABLE lip_cargas_excel (

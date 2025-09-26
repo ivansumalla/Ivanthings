@@ -1,7 +1,7 @@
 <?php
 return [
     'server' => 'AXSQL',
-    'database' => 'Lipsaquery',
+    'database' => 'AX_REAL',
     'username' => 'Lipsaquery',
     'password' => 'Lipsa01',
     'options' => [
